@@ -4,12 +4,16 @@ import firebase from "../config/firebase";
 const SignUp = () => {
   const [email, setEmail] = useState([]);
   const [password, setPassword] = useState([]);
+  const [name, setName] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
+      .then(({ user }) => {
+        user.updateProfile({ displayName: name });
+      })
       .catch((err) => {
         console.log(err);
       });
@@ -20,6 +24,16 @@ const SignUp = () => {
       <h1>Sign Up</h1>
       <form onSubmit={handleSubmit}>
         <div>
+          <label htmlFor="name">Name</label>
+          <input
+            name="name"
+            type="name"
+            id="name"
+            placeholder="Name"
+            onChange={(e) => {
+              setName(e.target.value);
+            }}
+          />
           <label htmlFor="email">E-mail</label>
           <input
             name="email"
