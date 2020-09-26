@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import firebase from "../config/firebase";
 
-const SignUp = () => {
-  const [email, setEmail] = useState([]);
-  const [password, setPassword] = useState([]);
-  const [name, setName] = useState([]);
+const SignUp = ({ history }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -13,10 +13,14 @@ const SignUp = () => {
       .createUserWithEmailAndPassword(email, password)
       .then(({ user }) => {
         user.updateProfile({ displayName: name });
+        history.push("/");
       })
       .catch((err) => {
         console.log(err);
       });
+  };
+  const goLogin = () => {
+    history.push("/login");
   };
 
   return (
@@ -34,6 +38,8 @@ const SignUp = () => {
               setName(e.target.value);
             }}
           />
+        </div>
+        <div>
           <label htmlFor="email">E-mail</label>
           <input
             name="email"
@@ -58,6 +64,9 @@ const SignUp = () => {
           />
         </div>
         <button type="submit">Sign Up</button>
+        <div>
+          <a onClick={goLogin}>アカウントをお持ちの方</a>
+        </div>
       </form>
     </div>
   );

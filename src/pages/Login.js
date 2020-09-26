@@ -12,7 +12,8 @@ const Login = ({ history }) => {
   }
   const handleSubmit = (e) => {
     e.preventDefault();
-    firebase.auth
+    firebase
+      .auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
         history.push("/");
@@ -21,13 +22,25 @@ const Login = ({ history }) => {
         console.log(err);
       });
   };
+  const goSignup = () => {
+    history.push("/signup");
+  };
+
   return (
     <>
       <h1>Login</h1>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="email">E-mail</label>
-          <input type="email" id="email" name="email" placeholder="Email" />
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Email"
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+          />
         </div>
         <div>
           <label htmlFor="password">Password</label>
@@ -36,9 +49,15 @@ const Login = ({ history }) => {
             id="password"
             name="email"
             placeholder="password"
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
           />
         </div>
         <button type="submit">Login</button>
+        <div>
+          <a onClick={goSignup}>アカウントをお持ちでない方</a>
+        </div>
       </form>
     </>
   );

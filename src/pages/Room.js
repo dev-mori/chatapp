@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import firebase from "../config/firebase";
 import "firebase/firestore";
-import Message from "./Message";
+import { AuthContext } from "../AuthService";
 
 const Room = () => {
   const [messages, setMessages] = useState(null);
@@ -15,21 +15,53 @@ const Room = () => {
         const messages = snapshot.docs.map((doc) => {
           return doc.data();
         });
+
+        function compare(a, b) {
+          let r = 0;
+          if (a.createdAt < b.createdAt) {
+            r = -1;
+          } else if (a.createdAt > b.createdAt) {
+            r = 1;
+          }
+          return r;
+        }
+        messages.sort(compare);
         setMessages(messages);
+        console.log(messages);
       });
   }, []);
+
+  const user = useContext(AuthContext);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    firebase.firestore().collection("messages").add({
+      content: value,
+      user: user.displayName,
+      createdAt: new Date(),
+    });
+    setValue("");
+  };
   return (
     <>
       <h1>Room</h1>
-      <ul>
-        <li>sample user : sample message</li>
-        <Message content={messages} />
-      </ul>
-      <form>
+      {messages &&
+        (() => {
+          const array = [];
+          for (let i = 0; i < messages.length; i++) {
+            array.push(
+              <li>
+                Name : {messages[i].user} <br /> Comment : {messages[i].content}
+              </li>
+            );
+          }
+          return <>{array}</>;
+        })()}
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
-          value={value}
           onChange={(e) => setValue(e.target.value)}
+          value={value}
         />
         <button type="submit">送信</button>
       </form>
